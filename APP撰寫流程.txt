@@ -1,0 +1,15 @@
+一.讀取並顯示新聞(點選新聞尚未實作)
+
+1.Add Lib  --bumptech , retrofit2 , prettytime 
+
+2.colors 設計
+
+3.drawable匯入要用到的圖片
+
+4.Main.xml設計
+
+5.News , Article , Source , ApiClient 類別 ApiInterface 介面實作
+
+6.item.xml 設計 Adapter , Utils Main類別實作
+
+二.

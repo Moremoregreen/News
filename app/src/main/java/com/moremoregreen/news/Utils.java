@@ -36,6 +36,12 @@ public class Utils {
         return country.toLowerCase();
     }
 
+    public static String getLanguage(){
+        Locale locale = Locale.getDefault();
+        String country = String.valueOf(locale.getLanguage());
+        return country.toLowerCase();
+    }
+
     public static String DateToTimeFormat(String oldstringDate) {
         PrettyTime p = new PrettyTime(new Locale(getCountry()));
         String isTime = null;

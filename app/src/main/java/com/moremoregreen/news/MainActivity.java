@@ -1,10 +1,16 @@
 package com.moremoregreen.news;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 
@@ -40,15 +46,22 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setNestedScrollingEnabled(false);
 
-        LoadJson();
+        LoadJson("");
     }
 
-    public void LoadJson() {
+    public void LoadJson(final String keyword) {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         String country = Utils.getCountry();
-
+        String language = Utils.getLanguage();
         Call<News> call;
-        call = apiInterface.getNews(country, API_KEY);
+
+        if (keyword.length()>0) {
+            call = apiInterface.getNewsSearch(keyword,language,"發佈於 ",API_KEY);
+        }else {
+            call = apiInterface.getNews(country, API_KEY);
+        }
+
+
 
         call.enqueue(new Callback<News>() {
             @Override
@@ -58,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
                         articles.clear();
                     }
                     articles = response.body().getArticle();
-                    adapter = new Adapter(articles,MainActivity.this);
+                    adapter = new Adapter(articles, MainActivity.this);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
-                }else {
+                } else {
                     Toast.makeText(MainActivity.this, "No Result!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -72,5 +85,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setQueryHint("搜尋最新新聞...");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query.length() > 2) {
+                    LoadJson(query);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                LoadJson(newText);
+                return false;
+            }
+        });
+
+        searchMenuItem.getIcon().setVisible(false,false);
+
+        return true;
     }
 }
