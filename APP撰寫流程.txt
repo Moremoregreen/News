@@ -12,4 +12,10 @@
 
 6.item.xml 設計 Adapter , Utils Main類別實作
 
-二.
+二.新增搜尋欄
+
+1.menu_main.xml 設計
+
+2.menu功能實作
+
+三.
